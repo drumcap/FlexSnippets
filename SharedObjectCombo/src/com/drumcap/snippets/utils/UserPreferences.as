@@ -18,6 +18,7 @@ package com.drumcap.snippets.utils
 		
 		public function set selectedItem(value:Object):void
 		{
+			trace("SET!!!!!!!!! selectedItemStu");
 			_sharedObject.data.selectedItem = value;
 			_sharedObject.flush();
 		}

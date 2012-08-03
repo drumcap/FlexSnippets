@@ -1,47 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
-				initialize="initializeHandler(event)" xmlns:components="com.drumcap.snippets.components.*"
-				>
-	
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="absolute"
+				initialize="initializeHandler(event)"
+				xmlns:components="com.drumcap.snippets.components.*"
+				creationComplete="application1_creationCompleteHandler(event)">
+
 	<mx:Script>
 		<![CDATA[
 			import com.drumcap.snippets.utils.UserPreferences;
-			
 			import flash.net.SharedObject;
-			
+			import flash.utils.setTimeout;
+			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.utils.ObjectUtil;
-			
+
+			//----------------------------------------------------------
+			//
+			//   Property 
+			//
+			//----------------------------------------------------------
+
 			[Bindable]
 			private var _userPreferences:UserPreferences;
-			
-			private function initializeHandler(event:Event):void {
-				_userPreferences =
-					new UserPreferences(SharedObject.getLocal("userPreferences"));
-				
+
+			private var arr:ArrayCollection = new ArrayCollection([{label: "AL", data: "Montgomery"}, {label: "AK", data: "Juneau"}, {label: "AR", data: "Little Rock"}]);
+
+			//----------------------------------------------------------
+			//
+			//   Event Handlers 
+			//
+			//----------------------------------------------------------
+
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				setTimeout(setData, 3000);
 			}
-			
+
 			protected function cb_changeHandler(event:ListEvent):void
 			{
 				_userPreferences.selectedItem = cb.selectedItem;
 			}
-			
+
+			protected function cb_dataChangeHandler(event:FlexEvent):void
+			{
+				trace("dataChange");
+			}
+
+			protected function cb_updateCompleteHandler(event:FlexEvent):void
+			{
+				trace("update!!");
+			}
+
+			private function initializeHandler(event:Event):void
+			{
+				_userPreferences = new UserPreferences(SharedObject.getLocal("userPreferences"));
+			}
+
+			//----------------------------------------------------------
+			//
+			//   Function 
+			//
+			//----------------------------------------------------------
+
+			private function setData():void
+			{
+				cb.dataProvider = arr;
+			}
 		]]>
 	</mx:Script>
-	
+
 	<mx:Binding source="_userPreferences.selectedItem"
-				destination="cb.selectedItemToBind" />
-	
+				destination="cb.selectedItemToBind"/>
+
 	<mx:VBox id="vbox">
-		
-		<components:BindingComboBox id="cb" change="cb_changeHandler(event)" > 
-			<mx:ArrayCollection>
-				<mx:Object label="AL" data="Montgomery"/>
-				<mx:Object label="AK" data="Juneau"/>
-				<mx:Object label="AR" data="Little Rock"/>
-			</mx:ArrayCollection>
+
+		<components:BindingComboBox id="cb"
+									dataChange="cb_dataChangeHandler(event)"
+									change="cb_changeHandler(event)"
+									selectedIndex="1"
+									userPreference="{_userPreferences}"
+									prefBindName="selectedItem">
 		</components:BindingComboBox>
 	</mx:VBox>
-	
+
 </mx:Application>
